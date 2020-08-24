@@ -25,7 +25,7 @@ class Task(models.Model):
     todolist = models.ForeignKey(Todolist, on_delete=models.CASCADE, related_name='task')
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
-    date_created = models.DateField(auto_now_add=True)
+    datetime_created = models.DateTimeField(auto_now_add=True)
     datetime_due = models.DateTimeField()
 
     def __str__(self):
