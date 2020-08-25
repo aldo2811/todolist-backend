@@ -3,6 +3,6 @@
     <li>{{ task.description }}</li>
     <li>Category: {{ task.category }}</li>
     <li>Due on {{ task.datetime_due }}</li>
-    <li>Created on {{ task.date_created }}</li>
+    <li>Created on {{ task.datetime_created }}</li>
 </ul>
 <button><a href={% url "task_list" %}>Back</a></button>
