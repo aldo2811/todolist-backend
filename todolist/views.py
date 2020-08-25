@@ -1,6 +1,6 @@
 from django.contrib.auth import login, authenticate, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError, PermissionDenied
 from django.shortcuts import render, redirect
 from django.views import View
 
@@ -22,6 +22,9 @@ class TaskList(View):
 class TaskDetail(View):
     def get(self, request, *args, **kwargs):
         task = Task.objects.get(pk=self.kwargs["task_id"])
+        todolist = task.todolist
+        if todolist.user != request.user:
+            raise PermissionDenied
         return render(request, "task_detail.html", {"task": task})
 
 
@@ -46,8 +49,7 @@ class TaskCreate(View):
             datetime_due=datetime_due,
         )
 
-        form = TaskForm()
-        return render(request, "task_create.html", {"form": form})
+        return redirect("task_list")
 
 
 class UserCreate(View):

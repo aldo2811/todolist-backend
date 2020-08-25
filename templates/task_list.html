@@ -1,5 +1,6 @@
+<button><a href={% url 'task_create' %}>Create Task</a></button>
 <ul>
     {% for task in task_list %}
-    <li>{{ task }}</li>
+        <li><a href={% url 'task_detail' task.id %}>{{ task }}</a></li>
     {% endfor %}
 </ul>

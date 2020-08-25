@@ -5,8 +5,6 @@ from django.dispatch import receiver
 
 
 # Create your models here.
-
-
 class Category(models.Model):
     name = models.CharField(max_length=100)
 
