@@ -1,4 +1,4 @@
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import render, redirect
@@ -11,7 +11,11 @@ from .models import Task, Category, Todolist, User
 # Create your views here.
 class TaskList(View):
     def get(self, request, *args, **kwargs):
-        tasks = Task.objects.all()
+        try:
+            todolist = Todolist.objects.get(user=request.user)
+            tasks = Task.objects.filter(todolist=todolist)
+        except ObjectDoesNotExist:
+            tasks = Todolist.objects.none()
         return render(request, "task_list.html", {"task_list": tasks})
 
 
@@ -28,14 +32,15 @@ class TaskCreate(View):
 
     def post(self, request, *args, **kwargs):
         category = request.POST["category"]
-        todolist = request.POST["todolist"]
         title = request.POST["title"]
         description = request.POST["description"]
         datetime_due = request.POST["datetime_due"]
 
+        todolist = Todolist.objects.get(user=request.user)
+
         Task.objects.create(
             category=Category.objects.get(pk=category),
-            todolist=Todolist.objects.get(pk=todolist),
+            todolist=todolist,
             title=title,
             description=description,
             datetime_due=datetime_due,
@@ -54,6 +59,7 @@ class UserCreate(View):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
+            Todolist.objects.create(user=request.user)
             return redirect("task_list")
         else:
             return render(

@@ -24,9 +24,6 @@ class TaskForm(forms.Form):
     category = forms.ModelChoiceField(
         label="Category: ", queryset=Category.objects.all(), required=True
     )
-    todolist = forms.ModelChoiceField(
-        label="Todolist: ", queryset=Todolist.objects.all(), required=True
-    )
     datetime_due = forms.DateField(
         label="Date Due: ",
         input_formats=["%Y-%m-%d %H:%M:%S"],
