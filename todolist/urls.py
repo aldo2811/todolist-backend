@@ -3,6 +3,8 @@ from django.urls import path
 from todolist import views
 
 urlpatterns = [
+    path("register/", views.UserCreate.as_view(), name="register"),
+    path("login/", views.UserLogin.as_view(), name="login"),
     path("task/", views.TaskList.as_view(), name="task_list"),
     path("task/<int:task_id>", views.TaskDetail.as_view(), name="task_detail"),
     path("task/new", views.TaskCreate.as_view(), name="task_create"),

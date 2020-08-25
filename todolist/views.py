@@ -1,7 +1,11 @@
-from django.shortcuts import render
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.shortcuts import render, redirect
 from django.views import View
-from .models import Task, Category, Todolist
-from .forms import TaskForm
+
+from .forms import TaskForm, CreateUserForm
+from .models import Task, Category, Todolist, User
 
 
 # Create your views here.
@@ -39,3 +43,48 @@ class TaskCreate(View):
 
         form = TaskForm()
         return render(request, "task_create.html", {"form": form})
+
+
+class UserCreate(View):
+    def get(self, request, *args, **kwargs):
+        form = CreateUserForm()
+        return render(request, "user_create.html", {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("task_list")
+        else:
+            return render(
+                request, "user_create.html", {"form": form, "error": form.errors}
+            )
+
+
+class UserLogin(View):
+    def get(self, request, *args, **kwargs):
+        form = AuthenticationForm()
+        return render(request, "user_login.html", {"form": form, "error": ""})
+
+    def post(self, request, *args, **kwargs):
+        username = request.POST["username"]
+        password = request.POST["password"]
+
+        form = AuthenticationForm()
+
+        try:
+            User.objects.get(username=username)
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+            else:
+                raise ValidationError("Incorrect password. Please try again.")
+        except ObjectDoesNotExist:
+            error = "Username does not exist. Please try again."
+            return render(request, "user_login.html", {"form": form, "error": error})
+        except ValidationError as e:
+            return render(
+                request, "user_login.html", {"form": form, "error": e.message}
+            )
+
+        return redirect("task_list")
