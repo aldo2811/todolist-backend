@@ -61,7 +61,10 @@ class TaskUpdate(View):
 
     def get(self, request, *args, **kwargs):
         task = Task.objects.get(pk=self.kwargs["task_id"])
-        print(task.datetime_due)
+        todolist = task.todolist
+        if todolist.user != request.user:
+            raise PermissionDenied
+
         form = TaskForm(
             initial={
                 "title": task.title,
@@ -78,10 +81,8 @@ class TaskUpdate(View):
         )
 
     def put(self, request, *args, **kwargs):
-        print(request.POST)
         form = TaskForm(request.POST)
         if form.is_valid():
-            print(form.cleaned_data["datetime_due"])
             task = form.cleaned_data
             Task.objects.filter(pk=self.kwargs["task_id"]).update(
                 title=task["title"],
