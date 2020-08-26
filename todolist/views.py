@@ -84,12 +84,29 @@ class TaskUpdate(View):
         form = TaskForm(request.POST)
         if form.is_valid():
             task = form.cleaned_data
-            Task.objects.filter(pk=self.kwargs["task_id"]).update(
-                title=task["title"],
-                description=task["description"],
-                category=task["category"],
-                datetime_due=task["datetime_due"],
-            )
+            task_obj = Task.objects.get(pk=self.kwargs["task_id"])
+            todolist = task_obj.todolist
+            if todolist.user != request.user:
+                raise PermissionDenied
+
+            task_obj.title = task["title"]
+            task_obj.description = task["description"]
+            task_obj.category = task["category"]
+            task_obj.datetime_due = task["datetime_due"]
+
+            task_obj.save()
+
+        return redirect("task_list")
+
+
+class TaskDelete(View):
+    def get(self, request, *args, **kwargs):
+        task = Task.objects.get(pk=self.kwargs["task_id"])
+        todolist = task.todolist
+        if todolist.user != request.user:
+            raise PermissionDenied
+
+        task.delete()
         return redirect("task_list")
 
 
