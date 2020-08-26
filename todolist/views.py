@@ -52,6 +52,46 @@ class TaskCreate(View):
         return redirect("task_list")
 
 
+class TaskUpdate(View):
+    def dispatch(self, request, *args, **kwargs):
+        method = request.POST.get("_method", "").lower()
+        if method == "put":
+            return self.put(request, *args, **kwargs)
+        return super(TaskUpdate, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        task = Task.objects.get(pk=self.kwargs["task_id"])
+        print(task.datetime_due)
+        form = TaskForm(
+            initial={
+                "title": task.title,
+                "description": task.description,
+                "category": task.category,
+                "datetime_due": task.datetime_due,
+            }
+        )
+
+        return render(
+            request,
+            "task_update.html",
+            {"form": form, "task_id": self.kwargs["task_id"]},
+        )
+
+    def put(self, request, *args, **kwargs):
+        print(request.POST)
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data["datetime_due"])
+            task = form.cleaned_data
+            Task.objects.filter(pk=self.kwargs["task_id"]).update(
+                title=task["title"],
+                description=task["description"],
+                category=task["category"],
+                datetime_due=task["datetime_due"],
+            )
+        return redirect("task_list")
+
+
 class UserCreate(View):
     def get(self, request, *args, **kwargs):
         form = CreateUserForm()
