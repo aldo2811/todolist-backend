@@ -193,3 +193,14 @@ class CategoryCreate(View):
         Category.objects.create(name=name, todolist=todolist)
 
         return redirect("task_list")
+
+
+class CategoryDelete(View):
+    def get(self, request, *args, **kwargs):
+        category = Category.objects.get(pk=self.kwargs["category_id"])
+        todolist = category.todolist
+        if todolist.user != request.user:
+            raise PermissionDenied
+
+        category.delete()
+        return redirect("task_list")

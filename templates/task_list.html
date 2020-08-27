@@ -4,7 +4,12 @@
     <ul>
         <li><a href="{% url 'task_list' %}">All</a></li>
         {% for category in categories %}
-            <li><a href="{% url 'task_list' %}?category={{ category }}">{{ category }}</a></li>
+            <li>
+                <a href="{% url 'task_list' %}?category={{ category }}">{{ category }}</a>
+                <button>
+                    <a href={% url 'category_delete' category.id %}>delete category</a>
+                </button>
+            </li>
         {% endfor %}
     </ul>
 </div>
