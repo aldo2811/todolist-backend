@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
 
 # Create your models here.
@@ -27,12 +28,19 @@ class Category(models.Model):
 
 
 class Task(models.Model):
+    STATUS = (
+        (1, _('High')),
+        (2, _('Normal')),
+        (3, _('Low'))
+    )
+
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, related_name="task"
     )
     todolist = models.ForeignKey(
         Todolist, on_delete=models.CASCADE, related_name="task"
     )
+    priority = models.PositiveSmallIntegerField(choices=STATUS, default=2)
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
     datetime_created = models.DateTimeField()

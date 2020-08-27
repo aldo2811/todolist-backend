@@ -62,6 +62,7 @@ class TaskCreate(View):
 
     def post(self, request, *args, **kwargs):
         category = request.POST["category"]
+        priority = request.POST["priority"]
         title = request.POST["title"]
         description = request.POST["description"]
         date_due = request.POST["date_due"]
@@ -70,6 +71,7 @@ class TaskCreate(View):
 
         Task.objects.create(
             category=Category.objects.get(pk=category),
+            priority=priority,
             todolist=todolist,
             title=title,
             description=description,
@@ -97,6 +99,7 @@ class TaskUpdate(View):
                 "title": task.title,
                 "description": task.description,
                 "category": task.category,
+                "priority": task.priority,
                 "date_due": task.date_due,
             }
         )
@@ -119,6 +122,7 @@ class TaskUpdate(View):
             task_obj.title = task["title"]
             task_obj.description = task["description"]
             task_obj.category = task["category"]
+            task_obj.priority = task["priority"]
             task_obj.date_due = task["date_due"]
 
             task_obj.save()
