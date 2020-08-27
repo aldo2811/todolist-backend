@@ -2,6 +2,7 @@
 <button><a href={% url 'category_create' %}>Add Category</a></button>
 <div>
     <ul>
+        <h3>Categories</h3>
         <li><a href="{% url 'task_list' %}">All</a></li>
         {% for category in categories %}
             <li>
@@ -15,17 +16,28 @@
 </div>
 <div>
     <ul>
-    <h3>OVERDUE</h3>
-    {% for task in overdue_tasks %}
-        <li><a href={% url 'task_detail' task.id %}>{{ task }}</a>
-            <button>
-                <a href={% url 'task_delete' task.id %}>finished</a>
-            </button>
-        </li>
-    {% empty %}
-        <li>No tasks overdue</li>
-    {% endfor %}
-</ul>
+        <h3>Priority</h3>
+        <li><a href="{% url 'task_list' %}">All</a></li>
+        {% for priority in priorities %}
+            <li>
+                <a href="{% url 'task_list' %}?priority={{ priority.0 }}">{{ priority.1 }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+<div>
+    <ul>
+        <h3>OVERDUE</h3>
+        {% for task in overdue_tasks %}
+            <li><a href={% url 'task_detail' task.id %}>{{ task }}</a>
+                <button>
+                    <a href={% url 'task_delete' task.id %}>finished</a>
+                </button>
+            </li>
+        {% empty %}
+            <li>No tasks overdue</li>
+        {% endfor %}
+    </ul>
     <ul>
         <h3>TODAY</h3>
         {% for task in today_tasks %}

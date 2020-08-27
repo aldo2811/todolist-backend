@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, PermissionDenied
 from django.shortcuts import render, redirect
+from django.utils.translation import ugettext_lazy as _
 from django.views import View
 
 from .forms import TaskForm, CreateUserForm, CategoryForm
@@ -21,9 +22,14 @@ class TaskList(View):
             categories = Category.objects.filter(todolist=todolist)
 
             category_name = request.GET.get("category", "")
+            priority = request.GET.get("priority", "")
+
             if category_name != "":
                 category = Category.objects.get(name=category_name)
                 tasks = tasks.filter(category=category)
+
+            if priority != "":
+                tasks = tasks.filter(priority=priority)
 
             today_tasks = tasks.filter(date_due=cur_date)
             overdue_tasks = tasks.filter(date_due__lt=cur_date)
@@ -34,11 +40,19 @@ class TaskList(View):
             overdue_tasks = Todolist.objects.none()
             today_tasks = Todolist.objects.none()
             upcoming_tasks = Todolist.objects.none()
+
+        priorities = (
+            (1, _('High')),
+            (2, _('Mid')),
+            (3, _('Low'))
+        )
+
         return render(
             request,
             "task_list.html",
             {
                 "categories": categories,
+                "priorities": priorities,
                 "overdue_tasks": overdue_tasks,
                 "today_tasks": today_tasks,
                 "upcoming_tasks": upcoming_tasks,
