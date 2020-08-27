@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Category
+from .models import Category, Todolist
 
 
 class CreateUserForm(UserCreationForm):
@@ -22,7 +22,7 @@ class TaskForm(forms.Form):
     title = forms.CharField(label="Title: ", max_length=100, required=True)
     description = forms.CharField(label="Description: ", max_length=500, required=True)
     category = forms.ModelChoiceField(
-        label="Category: ", queryset=Category.objects.all(), required=True
+        label="Category: ", queryset=Category.objects.filter()
     )
     date_due = forms.DateField(
         label="Date Due: ",
@@ -30,3 +30,7 @@ class TaskForm(forms.Form):
         widget=forms.DateInput(attrs={"class": "datetimepicker"}),
         required=True,
     )
+
+
+class CategoryForm(forms.Form):
+    name = forms.CharField(label="Category: ", max_length=100, required=True)

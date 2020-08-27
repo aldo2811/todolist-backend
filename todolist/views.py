@@ -6,7 +6,7 @@ from django.views import View
 
 from datetime import date, datetime, time
 
-from .forms import TaskForm, CreateUserForm
+from .forms import TaskForm, CreateUserForm, CategoryForm
 from .models import Task, Category, Todolist, User
 
 
@@ -18,6 +18,12 @@ class TaskList(View):
 
             todolist = Todolist.objects.get(user=request.user)
             tasks = Task.objects.filter(todolist=todolist)
+            categories = Category.objects.filter(todolist=todolist)
+
+            category_name = request.GET.get("category", "")
+            if category_name != "":
+                category = Category.objects.get(name=category_name)
+                tasks = tasks.filter(category=category)
 
             today_tasks = tasks.filter(date_due=cur_date)
             overdue_tasks = tasks.filter(date_due__lt=cur_date)
@@ -31,6 +37,7 @@ class TaskList(View):
             request,
             "task_list.html",
             {
+                "categories": categories,
                 "overdue_tasks": overdue_tasks,
                 "today_tasks": today_tasks,
                 "upcoming_tasks": upcoming_tasks,
@@ -171,5 +178,18 @@ class UserLogin(View):
             return render(
                 request, "user_login.html", {"form": form, "error": e.message}
             )
+
+        return redirect("task_list")
+
+
+class CategoryCreate(View):
+    def get(self, request, *args, **kwargs):
+        form = CategoryForm()
+        return render(request, "category_create.html", {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        name = request.POST["name"]
+        todolist = Todolist.objects.get(user=request.user)
+        Category.objects.create(name=name, todolist=todolist)
 
         return redirect("task_list")

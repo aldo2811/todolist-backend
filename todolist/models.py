@@ -6,7 +6,15 @@ from django.utils import timezone
 
 
 # Create your models here.
+class Todolist(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="todolist")
+
+    def __str__(self):
+        return self.user.username + "'s Todolist"
+
+
 class Category(models.Model):
+    todolist = models.ForeignKey(Todolist, on_delete=models.CASCADE, related_name="category")
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -14,13 +22,6 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = "Categories"
-
-
-class Todolist(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="todolist")
-
-    def __str__(self):
-        return self.user.username + "'s Todolist"
 
 
 class Task(models.Model):
