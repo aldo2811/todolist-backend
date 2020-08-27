@@ -1,10 +1,10 @@
+from datetime import date
+
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, PermissionDenied
 from django.shortcuts import render, redirect
 from django.views import View
-
-from datetime import date, datetime, time
 
 from .forms import TaskForm, CreateUserForm, CategoryForm
 from .models import Task, Category, Todolist, User
@@ -30,6 +30,7 @@ class TaskList(View):
             upcoming_tasks = tasks.filter(date_due__gt=cur_date)
 
         except ObjectDoesNotExist:
+            categories = Category.objects.none()
             overdue_tasks = Todolist.objects.none()
             today_tasks = Todolist.objects.none()
             upcoming_tasks = Todolist.objects.none()
