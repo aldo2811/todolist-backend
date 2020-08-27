@@ -14,7 +14,9 @@ class Todolist(models.Model):
 
 
 class Category(models.Model):
-    todolist = models.ForeignKey(Todolist, on_delete=models.CASCADE, related_name="category")
+    todolist = models.ForeignKey(
+        Todolist, on_delete=models.CASCADE, related_name="category"
+    )
     name = models.CharField(max_length=100)
 
     def __str__(self):
