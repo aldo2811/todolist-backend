@@ -24,9 +24,9 @@ class TaskForm(forms.Form):
     category = forms.ModelChoiceField(
         label="Category: ", queryset=Category.objects.all(), required=True
     )
-    datetime_due = forms.DateTimeField(
+    date_due = forms.DateField(
         label="Date Due: ",
-        input_formats=["%Y-%m-%d %H:%M"],
-        widget=forms.DateTimeInput(attrs={"class": "datetimepicker"}),
+        input_formats=["%Y-%m-%d"],
+        widget=forms.DateInput(attrs={"class": "datetimepicker"}),
         required=True,
     )

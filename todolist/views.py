@@ -14,15 +14,14 @@ from .models import Task, Category, Todolist, User
 class TaskList(View):
     def get(self, request, *args, **kwargs):
         try:
-            cur_datetime = datetime.today()
-            today_max = datetime.combine(date.today(), time.max)
+            cur_date = date.today()
 
             todolist = Todolist.objects.get(user=request.user)
             tasks = Task.objects.filter(todolist=todolist)
 
-            today_tasks = tasks.filter(datetime_due__range=[cur_datetime, today_max])
-            overdue_tasks = tasks.filter(datetime_due__lt=cur_datetime)
-            upcoming_tasks = tasks.filter(datetime_due__gt=cur_datetime)
+            today_tasks = tasks.filter(date_due=cur_date)
+            overdue_tasks = tasks.filter(date_due__lt=cur_date)
+            upcoming_tasks = tasks.filter(date_due__gt=cur_date)
 
         except ObjectDoesNotExist:
             overdue_tasks = Todolist.objects.none()
@@ -57,7 +56,7 @@ class TaskCreate(View):
         category = request.POST["category"]
         title = request.POST["title"]
         description = request.POST["description"]
-        datetime_due = request.POST["datetime_due"]
+        date_due = request.POST["date_due"]
 
         todolist = Todolist.objects.get(user=request.user)
 
@@ -66,7 +65,7 @@ class TaskCreate(View):
             todolist=todolist,
             title=title,
             description=description,
-            datetime_due=datetime_due,
+            date_due=date_due,
         )
 
         return redirect("task_list")
@@ -90,7 +89,7 @@ class TaskUpdate(View):
                 "title": task.title,
                 "description": task.description,
                 "category": task.category,
-                "datetime_due": task.datetime_due,
+                "date_due": task.date_due,
             }
         )
 
@@ -112,7 +111,7 @@ class TaskUpdate(View):
             task_obj.title = task["title"]
             task_obj.description = task["description"]
             task_obj.category = task["category"]
-            task_obj.datetime_due = task["datetime_due"]
+            task_obj.date_due = task["date_due"]
 
             task_obj.save()
 

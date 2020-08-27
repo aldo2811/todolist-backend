@@ -2,7 +2,7 @@
     <li><h1>{{ task.title }}</h1></li>
     <li>{{ task.description }}</li>
     <li>Category: {{ task.category }}</li>
-    <li>Due on {{ task.datetime_due }}</li>
+    <li>Due on {{ task.date_due }}</li>
     <li>Created on {{ task.datetime_created }}</li>
 </ul>
 <button><a href={% url "task_update" task.id %}>Update</a></button>
