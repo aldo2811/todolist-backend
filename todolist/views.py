@@ -1,8 +1,10 @@
-from django.contrib.auth import login, authenticate, get_user_model
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, PermissionDenied
 from django.shortcuts import render, redirect
 from django.views import View
+
+from datetime import date, datetime, time
 
 from .forms import TaskForm, CreateUserForm
 from .models import Task, Category, Todolist, User
@@ -12,11 +14,29 @@ from .models import Task, Category, Todolist, User
 class TaskList(View):
     def get(self, request, *args, **kwargs):
         try:
+            cur_datetime = datetime.today()
+            today_max = datetime.combine(date.today(), time.max)
+
             todolist = Todolist.objects.get(user=request.user)
             tasks = Task.objects.filter(todolist=todolist)
+
+            today_tasks = tasks.filter(datetime_due__range=[cur_datetime, today_max])
+            overdue_tasks = tasks.filter(datetime_due__lt=cur_datetime)
+            upcoming_tasks = tasks.filter(datetime_due__gt=cur_datetime)
+
         except ObjectDoesNotExist:
-            tasks = Todolist.objects.none()
-        return render(request, "task_list.html", {"task_list": tasks})
+            overdue_tasks = Todolist.objects.none()
+            today_tasks = Todolist.objects.none()
+            upcoming_tasks = Todolist.objects.none()
+        return render(
+            request,
+            "task_list.html",
+            {
+                "overdue_tasks": overdue_tasks,
+                "today_tasks": today_tasks,
+                "upcoming_tasks": upcoming_tasks,
+            },
+        )
 
 
 class TaskDetail(View):

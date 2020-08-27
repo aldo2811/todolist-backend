@@ -1,10 +1,37 @@
 <button><a href={% url 'task_create' %}>Create Task</a></button>
 <ul>
-    {% for task in task_list %}
+    <h3>OVERDUE</h3>
+    {% for task in overdue_tasks %}
         <li><a href={% url 'task_detail' task.id %}>{{ task }}</a>
             <button>
-                <a href={% url 'task_delete' task.id %}>delete</a>
+                <a href={% url 'task_delete' task.id %}>finished</a>
             </button>
         </li>
+    {% empty %}
+        <li>No tasks overdue</li>
+    {% endfor %}
+</ul>
+<ul>
+    <h3>TODAY</h3>
+    {% for task in today_tasks %}
+        <li><a href={% url 'task_detail' task.id %}>{{ task }}</a>
+            <button>
+                <a href={% url 'task_delete' task.id %}>finished</a>
+            </button>
+        </li>
+    {% empty %}
+        <li>No tasks today</li>
+    {% endfor %}
+</ul>
+<ul>
+    <h3>UPCOMING</h3>
+    {% for task in upcoming_tasks %}
+        <li><a href={% url 'task_detail' task.id %}>{{ task }}</a>
+            <button>
+                <a href={% url 'task_delete' task.id %}>finished</a>
+            </button>
+        </li>
+    {% empty %}
+        <li>No upcoming tasks</li>
     {% endfor %}
 </ul>
